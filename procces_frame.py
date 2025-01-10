@@ -18,6 +18,8 @@ colors = {
     "lavender": (250, 230, 230),
 }
 
+log = 'centers.txt'
+
 def cut_court(frame: np.ndarray) -> np.ndarray:
     """
     Only keep the court area in the frame.
@@ -46,6 +48,11 @@ def cut_court(frame: np.ndarray) -> np.ndarray:
 
     return masked_frame
 
+def log_out_top_contender_with_x_y_position(top_contour, frame_idx, file_path):
+    with open(file_path, "a") as f:
+        f.write(f"{frame_idx},{top_contour.center[0]},{top_contour.center[1]}\n")
+
+
 def proccess_frame(frame_path: str, backgroundless_ball_path: str, output_path: str, debug: bool = False, tracker: gc.ContourTracker = None):
     filtered_frame = cf.create_filtered_frame(
         match_image_path=frame_path,
@@ -73,6 +80,11 @@ def proccess_frame(frame_path: str, backgroundless_ball_path: str, output_path: 
 
     top_cotours = tracker.find_top_candidates(contours, top_n=10)
     frame = cf.load_image(frame_path)
+    
+    if len(top_cotours) != 0:
+    # print top contours, each with a different color
+    log_out_top_contender_with_x_y_position(top_cotours[0], frame_path, log)
+
 
     # print top contours, each with a different color
 
